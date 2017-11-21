@@ -104,10 +104,25 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 clearImage();
                 break;
             case R.id.save_button:
+                saveImage();
                 break;
             case R.id.share_button:
+                shareImage();
                 break;
         }
+    }
+
+    private void shareImage() {
+        BitmapUtils.deleteImageFile(this, mTempPhotoPath);
+        // Save the image
+        BitmapUtils.saveImage(this, mResultsBitmap);
+        // Share the image
+        BitmapUtils.shareImage(this, mTempPhotoPath);
+    }
+
+    private void saveImage() {
+        BitmapUtils.saveImage(this,mResultsBitmap);
+        BitmapUtils.deleteImageFile(this,mTempPhotoPath);
     }
 
     private void clearImage() {
@@ -167,14 +182,23 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private void processAndSetImage() {
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
         Log.d("BitmapUtils", "witdth X heifht of image after sample "+mResultsBitmap.getWidth()+" x "+mResultsBitmap.getHeight());
+
+        imageView.setVisibility(View.VISIBLE);
+        clearButton.setVisibility(View.VISIBLE);
+        saveButton.setVisibility(View.VISIBLE);
+        shareButton.setVisibility(View.VISIBLE);
+        emojifyButton.setVisibility(View.GONE);
+
         // Detect the faces and overlay the appropriate emoji
         //mResultsBitmap = Emojifier.detectFacesandOverlayEmoji(this, mResultsBitmap);
 
         // Set the new bitmap to the ImageView
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        mResultsBitmap =  Bitmap.createBitmap(mResultsBitmap, 0, 0, mResultsBitmap.getWidth(), mResultsBitmap.getHeight(), matrix, true);
+//        Matrix matrix = new Matrix();
+//        matrix.postRotate(90);
+//        mResultsBitmap =  Bitmap.createBitmap(mResultsBitmap, 0, 0, mResultsBitmap.getWidth(), mResultsBitmap.getHeight(), matrix, true);
 
         imageView.setImageBitmap(mResultsBitmap);
+        EmojiFy.detectFacesandOverlayEmoji(this,mResultsBitmap);
+        //Toast.makeText(this,"Totaol no of people in this photo :"+EmojiFy.detectFaces(this,mResultsBitmap), Toast.LENGTH_SHORT).show();
     }
 }
